@@ -15,6 +15,18 @@ import {
   handleReactionCapture,
 } from "./handlers.js";
 
+// Discord rejects message payloads above 2000 chars with a 50035 error.
+// Recall results can easily exceed that with a few large memory rows, so
+// clamp replies and surface that they were truncated.
+const DISCORD_MESSAGE_LIMIT = 2000;
+const TRUNCATION_SUFFIX = "\n…(truncated)";
+
+function clampForDiscord(text: string): string {
+  if (text.length <= DISCORD_MESSAGE_LIMIT) return text;
+  const room = DISCORD_MESSAGE_LIMIT - TRUNCATION_SUFFIX.length;
+  return `${text.slice(0, room)}${TRUNCATION_SUFFIX}`;
+}
+
 async function main(): Promise<void> {
   const cfg = loadConfig();
   const memory = new LedgerMem({
@@ -80,7 +92,7 @@ async function main(): Promise<void> {
       reply = "Sorry, something went wrong handling that command.";
     }
     try {
-      await interaction.editReply({ content: reply });
+      await interaction.editReply({ content: clampForDiscord(reply) });
     } catch (err) {
       console.error("editReply failed:", err);
     }
@@ -120,7 +132,7 @@ async function main(): Promise<void> {
     if (result) {
       try {
         const dm = await user.createDM();
-        await dm.send(result);
+        await dm.send(clampForDiscord(result));
       } catch {
         // user may have DMs disabled — silent ok
       }
@@ -128,6 +140,25 @@ async function main(): Promise<void> {
   });
 
   await client.login(cfg.discordBotToken);
+
+  // Graceful shutdown — destroy() drains the in-flight gateway events and
+  // flushes any pending REST requests so we don't drop the in-progress
+  // editReply or memory.add when the orchestrator sends SIGTERM.
+  let shuttingDown = false;
+  const shutdown = async (signal: string): Promise<void> => {
+    if (shuttingDown) return;
+    shuttingDown = true;
+    // eslint-disable-next-line no-console
+    console.log(`Received ${signal}, shutting down Discord client…`);
+    try {
+      await client.destroy();
+    } catch (err) {
+      console.error("client.destroy failed:", err);
+    }
+    process.exit(0);
+  };
+  process.once("SIGINT", () => void shutdown("SIGINT"));
+  process.once("SIGTERM", () => void shutdown("SIGTERM"));
 }
 
 main().catch((err) => {
