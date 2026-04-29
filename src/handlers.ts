@@ -1,8 +1,8 @@
-import type { LedgerMem } from "@ledgermem/memory";
+import type { Mnemo } from "@getmnemo/memory";
 
 export interface MemoryClient {
-  search: LedgerMem["search"];
-  add: LedgerMem["add"];
+  search: Mnemo["search"];
+  add: Mnemo["add"];
   delete?: (id: string) => Promise<void>;
 }
 
@@ -50,7 +50,7 @@ export async function handleForget(ctx: CommandContext): Promise<string> {
   const id = ctx.text.trim();
   if (!id) return "Usage: `/forget id:<id>`";
   if (typeof ctx.memory.delete !== "function") {
-    return "Delete is not supported by this LedgerMem client version.";
+    return "Delete is not supported by this Mnemo client version.";
   }
   await ctx.memory.delete(id);
   return `Forgot memory \`${id}\`.`;

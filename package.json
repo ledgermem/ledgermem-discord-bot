@@ -1,7 +1,7 @@
 {
-  "name": "@ledgermem/discord-bot",
+  "name": "@getmnemo/discord-bot",
   "version": "0.1.0",
-  "description": "LedgerMem Discord bot — slash commands and reaction-based capture, backed by LedgerMem.",
+  "description": "Mnemo Discord bot — slash commands and reaction-based capture, backed by Mnemo.",
   "type": "module",
   "main": "dist/index.js",
   "scripts": {
@@ -16,7 +16,7 @@
     "node": ">=22"
   },
   "dependencies": {
-    "@ledgermem/memory": "^0.1.0",
+    "@getmnemo/memory": "^0.1.0",
     "discord.js": "^14.16.3",
     "dotenv": "^16.4.5"
   },

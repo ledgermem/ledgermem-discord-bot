@@ -6,7 +6,7 @@ import {
   Partials,
   MessageFlags,
 } from "discord.js";
-import { LedgerMem } from "@ledgermem/memory";
+import { Mnemo } from "@getmnemo/memory";
 import { loadConfig } from "./config.js";
 import {
   handleRemember,
@@ -29,9 +29,9 @@ function clampForDiscord(text: string): string {
 
 async function main(): Promise<void> {
   const cfg = loadConfig();
-  const memory = new LedgerMem({
-    apiKey: cfg.ledgermemApiKey,
-    workspaceId: cfg.ledgermemWorkspaceId,
+  const memory = new Mnemo({
+    apiKey: cfg.getmnemoApiKey,
+    workspaceId: cfg.getmnemoWorkspaceId,
   });
 
   const client = new Client({
@@ -46,7 +46,7 @@ async function main(): Promise<void> {
 
   client.once(Events.ClientReady, (c) => {
     // eslint-disable-next-line no-console
-    console.log(`LedgerMem Discord bot ready as ${c.user.tag}`);
+    console.log(`Mnemo Discord bot ready as ${c.user.tag}`);
   });
 
   client.on(Events.InteractionCreate, async (interaction) => {
