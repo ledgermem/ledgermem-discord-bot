@@ -1,5 +1,5 @@
 {
-  "name": "@getmnemo/discord-bot",
+  "name": "@mnemo/discord-bot",
   "version": "0.1.0",
   "description": "Mnemo Discord bot — slash commands and reaction-based capture, backed by Mnemo.",
   "type": "module",
@@ -16,7 +16,7 @@
     "node": ">=22"
   },
   "dependencies": {
-    "@getmnemo/memory": "^0.1.0",
+    "@mnemo/memory": "^0.1.0",
     "discord.js": "^14.16.3",
     "dotenv": "^16.4.5"
   },
